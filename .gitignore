@@ -4,9 +4,6 @@ graphify-out/
 # Machine-specific Claude Code settings (graphify hooks use absolute paths)
 .claude/settings.local.json
 
-# IDE
-.idea/
-
 # Node / web
 node_modules/
 web/dist/
