@@ -1,0 +1,61 @@
+name: Deploy
+
+# Every push to main builds and deploys the Worker. No tests run here, to save CI minutes:
+# CI (ci.yml) already ran on the pull request or branch before it was merged.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy to Cloudflare
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: web
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      # tsc -b runs first, so a type error still blocks the deploy.
+      - run: npm run build
+
+      - name: Deploy the Worker
+        run: npx wrangler deploy 2>&1 | tee deploy.log
+
+      # Secrets come from GitHub secrets on every deploy, so GitHub is the single source of truth.
+      - name: Upload Worker secrets
+        env:
+          AGENT_TOKEN: ${{ secrets.AGENT_TOKEN }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+        run: |
+          jq -n --arg a "$AGENT_TOKEN" --arg p "$ADMIN_PASSWORD" --arg s "$SESSION_SECRET" \
+            '{AGENT_TOKEN: $a, ADMIN_PASSWORD: $p, SESSION_SECRET: $s}' | npx wrangler secret bulk
+
+      - name: Smoke test /api/health
+        run: |
+          url="${{ vars.WORKER_URL }}"
+          if [ -z "$url" ]; then
+            url="$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' deploy.log | head -1)"
+          fi
+          test -n "$url" || { echo "Could not determine the Worker URL" >&2; exit 1; }
+          echo "Checking $url/api/health"
+          curl -fsS --retry 6 --retry-delay 5 --retry-all-errors "$url/api/health" | grep -q '"ok":true'
+          echo "Deployed: $url" >> "$GITHUB_STEP_SUMMARY"

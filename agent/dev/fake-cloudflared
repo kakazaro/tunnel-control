@@ -1,0 +1,4 @@
+#!/bin/sh
+# Stand-in for cloudflared during development: prints a fake trycloudflare URL to stderr.
+# Use:  CLOUDFLARED_BIN=$PWD/dev/fake-cloudflared python -m tunnel_agent
+exec "${PYTHON:-python3}" "$(dirname "$0")/../tests/fixtures/fake_cloudflared.py" "$@"

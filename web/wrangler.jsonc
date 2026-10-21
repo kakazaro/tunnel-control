@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tunnel-control",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"],
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "AGENT_HUB", "class_name": "AgentHub" }],
+  },
+  // Never edit an applied migration; add a new tag instead.
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["AgentHub"] }],
+  // Secrets (AGENT_TOKEN, ADMIN_PASSWORD, SESSION_SECRET) are NOT here: they are
+  // uploaded by CI from GitHub secrets, or read from .dev.vars locally.
+  "vars": {
+    "AGENT_ID": "vm-1",
+    "POLL_INTERVAL_SECONDS": "60",
+    "AGENT_OFFLINE_AFTER_SECONDS": "150",
+  },
+  "observability": { "enabled": true },
+}

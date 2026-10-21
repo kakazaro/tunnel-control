@@ -1,0 +1,38 @@
+/*
+ * Design tokens. This is the ONLY place for raw colors and fonts.
+ * Tailwind v4 turns every --color-* / --font-* below into utilities
+ * (text-neon-cyan, bg-surface, font-display, ...) and CSS variables.
+ */
+@theme {
+  --color-bg: #05060f;
+  --color-bg-raised: #0a0d22;
+  --color-surface: rgb(16 20 44 / 0.55);
+  --color-line: rgb(0 229 255 / 0.25);
+  --color-line-strong: rgb(0 229 255 / 0.55);
+
+  --color-neon-cyan: #00e5ff;
+  --color-neon-magenta: #ff2bd6;
+  --color-neon-violet: #7c3aed;
+
+  --color-ok: #39ff88;
+  --color-warn: #ffb020;
+  --color-danger: #ff3b5c;
+
+  --color-text: #e6f1ff;
+  --color-text-muted: #8a9bc2;
+
+  --font-display: "Orbitron", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --animate-flicker-on: flicker-on 0.9s steps(1, end) 1 both;
+  --animate-ping-ring: ping-ring 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+:root {
+  /* Neon glow levels: they take the current text/border color. */
+  --glow-sm: 0 0 6px currentColor;
+  --glow-md: 0 0 10px currentColor, 0 0 26px color-mix(in srgb, currentColor 40%, transparent);
+  --glow-lg:
+    0 0 14px currentColor, 0 0 40px color-mix(in srgb, currentColor 50%, transparent),
+    0 0 90px color-mix(in srgb, currentColor 25%, transparent);
+}

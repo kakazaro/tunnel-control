@@ -1,0 +1,29 @@
+[Unit]
+Description=Tunnel Control demo app (127.0.0.1:8080)
+After=network.target
+
+[Service]
+Type=simple
+User=tunnelagent
+Group=tunnelagent
+WorkingDirectory=/opt/tunnel-agent
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/tunnel-agent/.venv/bin/python /opt/tunnel-agent/demo_app/server.py
+Restart=always
+RestartSec=5
+
+# Hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+
+[Install]
+WantedBy=multi-user.target

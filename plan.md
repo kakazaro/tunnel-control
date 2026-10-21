@@ -24,10 +24,11 @@
 ### Goals
 1. The web UI shows: agent online/offline, the agent's channel (WebSocket or polling), desired state, actual state, tunnel URL, last seen time, last error, recent events.
 2. The web UI can set the desired state to `running` or `stopped`.
-3. The Python agent reconciles the actual state with the desired state. It starts, stops, or restarts `cloudflared`, and reports the new URL. With the WebSocket connected, a UI click reaches the agent within about a second.
-4. **Every push to `main` on GitHub runs CI and, if it passes, deploys the web app to Cloudflare automatically.**
-5. Both parts are deployable by following a step-by-step guide (`docs/deployment.md`).
-6. The repo contains `CLAUDE.md` and `docs/` so that future AI agents and humans can maintain the code.
+3. **Starting a tunnel requires a session length (1h, 2h, 4h, 8h or 12h), chosen in a modal; when it ends, the tunnel stops automatically** (server alarm + local deadline in the agent).
+4. The Python agent reconciles the actual state with the desired state. It starts, stops, or restarts `cloudflared`, and reports the new URL. With the WebSocket connected, a UI click reaches the agent within about a second.
+5. **Every push to `main` on GitHub builds and deploys the web app to Cloudflare automatically (tests run on pull requests and branches, not on the deploy).**
+6. Both parts are deployable by following a step-by-step guide (`docs/deployment.md`).
+7. The repo contains `CLAUDE.md` and `docs/` so that future AI agents and humans can maintain the code.
 
 ### Non-goals (for now)
 - Named tunnels, custom domains, Cloudflare Access.
@@ -284,7 +285,8 @@ All JSON responses send `Cache-Control: no-store`. Errors use the shape `{ error
     - `online = status !== null && now - status.lastSeen < AGENT_OFFLINE_AFTER_SECONDS × 1000`.
     - `pending = online && (desired === "running") !== status.running`.
 4. **`PUT /api/control`** (auth: session)
-    - Body: `{ state: "running" | "stopped" }`. Response: same shape as GET. Adds a `desired_changed` event and nudges the agent.
+    - Body: `{ "state": "stopped" }` or `{ "state": "running", "durationHours": 1 | 2 | 4 | 8 | 12 }` (**required** to start). Response: same shape as GET (with `expiresAt`). Adds a `desired_changed` event and nudges the agent.
+    - When `expiresAt` passes, the Durable Object sets desired to `stopped`, adds a `session_expired` event and nudges the agent (alarm + check on every read/sync). The sync response also carries `expiresAt`, and the agent stops the tunnel locally at that time even if the API is unreachable.
 5. **`GET /api/events?limit=50`** (auth: session, `limit` 1–100, default 50) returns `{ events: Event[] }`.
 6. **`POST /api/auth/login`** with body `{ password }`.
     - Compare in constant time. On success, set an httpOnly, SameSite=Lax cookie with a signed JWT (expires in 12h). Set `Secure` when the request is HTTPS (always true on `workers.dev`; false only for local `http://localhost`).
@@ -689,16 +691,16 @@ Client tests (jsdom):
 - `reconciler.py` tests: use a fake tunnel and a fake client to check each transition, the immediate re-sync after a state change, a nudge ending the wait early, the start backoff gate, keeping the tunnel's state when the API is unreachable, and shutdown sending the final sync.
 - `config.py` tests: required vars missing → a clear error, the interval is clamped to 10–300, and a non-https base URL is rejected.
 
-### CI/CD (`.github/workflows/ci.yml`)
-- Trigger on push (all branches) and pull requests.
-- **Job `web`** (working directory `web`): `npm ci`, lint, typecheck (`tsc --noEmit` or `tsc -b`), test, build. Must not need any real secret (tests use bindings from `vitest.config.ts`).
-- **Job `agent`** (working directory `agent`): Python 3.9 and 3.11 matrix, install the dev dependencies, `ruff check`, `ruff format --check`, `pytest`.
-- **Job `shellcheck`:** `shellcheck scripts/*.sh`.
-- **Job `deploy`:**
-    - `needs: [web, agent, shellcheck]`, and runs only on `push` to `main` (never on pull requests).
+### CI/CD (two workflows)
+- **`ci.yml`** runs on pull requests and on pushes to every branch **except `main`**:
+    - **Job `web`** (working directory `web`): `npm ci`, lint, format check, typecheck, test, build, and a grep that the client bundle contains no secret names. Must not need any real secret (tests use bindings from `vitest.config.ts`).
+    - **Job `agent`** (working directory `agent`): Python 3.9 and 3.11 matrix, install the dev dependencies, `ruff check`, `ruff format --check`, `pytest`.
+    - **Job `shellcheck`:** `shellcheck scripts/*.sh`.
+- **`deploy.yml`** runs on every push to `main` (and manually). **It does not run tests**, to save resources; merge only green pull requests.
     - `concurrency: deploy-production` (no parallel deploys), `environment: production`.
-    - Builds the app, then deploys with `cloudflare/wrangler-action` (working directory `web`), using `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, and uploads `AGENT_TOKEN`, `ADMIN_PASSWORD`, `SESSION_SECRET` as Worker secrets from GitHub secrets (the action's `secrets:` input).
-    - After deploying, smoke-test `GET <workers.dev URL>/api/health` and fail the job if it doesn't return `{ ok: true }`. Read the URL from the wrangler output or a `WORKER_URL` repository variable.
+    - `npm ci`, `npm run build` (its `tsc -b` still blocks type errors), then `npx wrangler deploy`.
+    - Uploads `AGENT_TOKEN`, `ADMIN_PASSWORD`, `SESSION_SECRET` from GitHub secrets with `wrangler secret bulk` (after the deploy, so the first deploy works too).
+    - Smoke-tests `GET <workers.dev URL>/api/health` and fails the job if it doesn't return `{ ok: true }`. The URL comes from the `WORKER_URL` repository variable or the wrangler output.
 - The agent is **not** deployed by CI (the VM is private; see the non-goals).
 
 ---
@@ -713,7 +715,7 @@ Client tests (jsdom):
 - [ ] The agent WebSocket requires the same Bearer token as sync.
 - [ ] Every request body and WebSocket message is validated with zod, with length limits on strings.
 - [ ] The SPA bundle contains no secrets (grep the build output).
-- [ ] The deploy job runs only on pushes to `main`, never on pull requests.
+- [ ] `deploy.yml` runs only on pushes to `main` (and manual runs), never on pull requests.
 - [ ] The agent never logs the token. The `subprocess` call uses an argument list, never `shell=True`.
 - [ ] The agent runs as a non-root user with systemd hardening, and the env file is mode 600.
 - [ ] The demo app binds to `127.0.0.1` only.
@@ -795,7 +797,7 @@ Work through the phases in order. At the end of each phase: run the listed check
 - [ ] With the WebSocket connected, a UI click reaches the agent within a few seconds; without it, within one poll interval.
 - [ ] The agent restarts a crashed tunnel when desired = running, and survives a VM reboot (through systemd).
 - [ ] Losing contact with the control API (HTTP or WebSocket) never crashes the agent or changes the tunnel state.
-- [ ] A push to `main` runs CI and deploys the Worker to Cloudflare without manual steps; a failing check blocks the deploy.
+- [ ] A push to `main` builds and deploys the Worker to Cloudflare without manual steps (tests run on pull requests, not on the deploy).
 - [ ] All tests, lint, typecheck, build, and shellcheck pass in CI.
 - [ ] `CLAUDE.md`, `README.md`, every file in `docs/`, the ADRs, and `CHANGELOG.md` are complete and match the code.
 - [ ] `docs/deployment.md` lets a non-expert deploy both parts from zero.

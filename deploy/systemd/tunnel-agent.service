@@ -1,0 +1,40 @@
+[Unit]
+Description=Tunnel Control agent (starts/stops a Cloudflare Quick Tunnel on request)
+Documentation=https://github.com/your-org/tunnel-control
+After=network-online.target tunnel-demo-app.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tunnelagent
+Group=tunnelagent
+WorkingDirectory=/opt/tunnel-agent
+EnvironmentFile=/etc/tunnel-agent/agent.env
+# cloudflared writes under $HOME; StateDirectory gives us a writable one despite ProtectSystem=strict.
+Environment=HOME=/var/lib/tunnel-agent
+Environment=PYTHONPATH=/opt/tunnel-agent/src
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/tunnel-agent/.venv/bin/python -m tunnel_agent
+Restart=always
+RestartSec=5
+# Stopping the agent also stops cloudflared (same cgroup).
+KillMode=control-group
+TimeoutStopSec=30
+StateDirectory=tunnel-agent
+UMask=0077
+
+# Hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+
+[Install]
+WantedBy=multi-user.target
