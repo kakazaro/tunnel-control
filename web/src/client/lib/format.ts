@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export function pad(n: number): string {
   return String(n).padStart(2, "0");
 }
@@ -19,8 +21,12 @@ export function formatUptime(ms: number): string {
   return `${pad(Math.floor(total / 3600))}:${pad(Math.floor((total % 3600) / 60))}:${pad(total % 60)}`;
 }
 
-/** Local time of day, in the browser's timezone. */
+/** Local "HH:mm:ss - DD MMM YYYY", in the browser's timezone. */
 export function clockTime(at: number): string {
-  const d = new Date(at);
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return dayjs(at).format("HH:mm:ss - DD MMM YYYY");
+}
+
+/** ISO-8601 UTC string, for `<time dateTime>`. */
+export function isoTime(at: number): string {
+  return dayjs(at).toISOString();
 }

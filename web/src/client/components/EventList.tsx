@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import type { EventType, TunnelEvent } from "../../shared/schemas";
 import { useEffectsLevel } from "../hooks/useEffectsLevel";
-import { clockTime } from "../lib/format";
+import { clockTime, isoTime } from "../lib/format";
 import { AnimatedNumber } from "./fx/AnimatedNumber";
 import { HoloPanel } from "./fx/HoloPanel";
 
@@ -72,10 +72,7 @@ function Row({ event, isNew }: { event: TunnelEvent; isNew: boolean }) {
           <span className={`font-display text-[0.65rem] font-bold tracking-widest ${color}`}>
             {tag}
           </span>
-          <time
-            className="text-xs text-text-muted tabular-nums"
-            dateTime={new Date(event.at).toISOString()}
-          >
+          <time className="text-xs text-text-muted tabular-nums" dateTime={isoTime(event.at)}>
             {clockTime(event.at)}
           </time>
         </p>

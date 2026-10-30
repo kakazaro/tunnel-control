@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+- Event stream timestamps show date and time (`HH:mm:ss - DD MMM YYYY`); client date formatting now uses `dayjs`.
+
 ### Added
 - Cloudflare Worker (Hono) API: agent sync, agent WebSocket nudges, control, events, login/logout, health.
 - `AgentHub` Durable Object (SQLite): desired state, status, capped event log, offline alarm, login rate limiter.

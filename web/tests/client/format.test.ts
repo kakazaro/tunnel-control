@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatUptime, relativeTime } from "../../src/client/lib/format";
+import { clockTime, formatUptime, relativeTime } from "../../src/client/lib/format";
 
 describe("relativeTime", () => {
   it.each([
@@ -27,5 +27,12 @@ describe("formatUptime", () => {
     expect(formatUptime(3_661_000)).toBe("01:01:01");
     expect(formatUptime(100 * 3_600_000)).toBe("100:00:00");
     expect(formatUptime(-5)).toBe("00:00:00");
+  });
+});
+
+describe("clockTime", () => {
+  it("formats HH:mm:ss - DD MMM YYYY in local time", () => {
+    const at = new Date(2026, 9, 30, 8, 5, 9).getTime();
+    expect(clockTime(at)).toBe("08:05:09 - 30 Oct 2026");
   });
 });
