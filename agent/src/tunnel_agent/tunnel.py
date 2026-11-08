@@ -23,7 +23,7 @@ class QuickTunnel:
     def __init__(
         self,
         binary: str,
-        target_url: str = "http://localhost:8080",
+        target_url: str = "http://localhost:18080",
         protocol: str = "auto",
         metrics: str = "127.0.0.1:20241",
         start_timeout: float = 30.0,

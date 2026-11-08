@@ -13,7 +13,7 @@ Browser ──HTTPS──► Cloudflare Worker (SPA + API) ──► Durable Obj
                          ▲   ▲
         HTTPS sync (POST)│   │WSS nudge
                          │   │
-              Python agent on the VM ──► cloudflared ──► https://*.trycloudflare.com ──► demo app :8080
+              Python agent on the VM ──► cloudflared ──► https://*.trycloudflare.com ──► demo app :18080
 ```
 
 ## Quick start

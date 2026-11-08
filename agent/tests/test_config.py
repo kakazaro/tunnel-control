@@ -17,7 +17,7 @@ def test_defaults_and_urls():
     assert cfg.sync_url == "https://tc.example.workers.dev/api/agent/sync"
     assert cfg.ws_url == "wss://tc.example.workers.dev/api/agent/ws"
     assert (cfg.agent_id, cfg.poll_interval, cfg.enable_websocket) == ("vm-1", 60, True)
-    assert cfg.tunnel_target_url == "http://localhost:8080"
+    assert cfg.tunnel_target_url == "http://localhost:18080"
     assert cfg.proxy is None
 
 

@@ -6,6 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
+- Demo app / default tunnel target port moved from 8080 to 18080 to avoid clashing with existing containers (open-webui uses 8080/8081). On existing VMs update `TUNNEL_TARGET_URL` in `/etc/tunnel-agent.env` and restart `tunnel-demo-app` and `tunnel-agent`.
 - Event stream timestamps show date and time (`HH:mm:ss - DD MMM YYYY`); client date formatting now uses `dayjs`.
 
 ### Added

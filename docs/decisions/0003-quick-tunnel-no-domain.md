@@ -4,7 +4,7 @@
 The user has no domain, so named tunnels and Cloudflare Access are not available.
 
 ## Decision
-Use a Cloudflare **Quick Tunnel**: `cloudflared tunnel --url http://localhost:8080`. It gives a random `https://*.trycloudflare.com` URL. The agent reads the URL from `cloudflared`'s stderr and reports it.
+Use a Cloudflare **Quick Tunnel**: `cloudflared tunnel --url http://localhost:18080`. It gives a random `https://*.trycloudflare.com` URL. The agent reads the URL from `cloudflared`'s stderr and reports it.
 
 ## Consequences
 - The URL is public and changes on every restart; the dashboard warns about this.

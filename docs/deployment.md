@@ -105,7 +105,7 @@ You need three secrets. Generate each one and store them in a password manager:
    ```bash
    systemctl status tunnel-agent tunnel-demo-app
    journalctl -u tunnel-agent -f
-   curl http://127.0.0.1:8080/healthz      # prints: ok
+   curl http://127.0.0.1:18080/healthz      # prints: ok
    ```
 
 ## 8. End-to-end test

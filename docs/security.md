@@ -6,7 +6,7 @@ This is a test/learning project with a single admin and a Quick Tunnel. Read the
 
 | Surface | Access |
 |---|---|
-| The Quick Tunnel URL (`*.trycloudflare.com`) | **Public**: anyone with the URL reaches the demo app on port 8080. It is time-limited (session length) and changes on every start. |
+| The Quick Tunnel URL (`*.trycloudflare.com`) | **Public**: anyone with the URL reaches the demo app on port 18080. It is time-limited (session length) and changes on every start. |
 | The SPA files (`/`, JS, CSS) | Public by design; they contain no data and no secrets. |
 | `GET /api/health` | Public; returns `{ "ok": true }` only. |
 | `POST /api/auth/login`, `/logout` | Public endpoints; login is rate limited. |
@@ -14,7 +14,7 @@ This is a test/learning project with a single admin and a Quick Tunnel. Read the
 | `POST /api/agent/sync`, `GET /api/agent/ws` | Bearer `AGENT_TOKEN` required. |
 
 The agent has **no HTTP server**: nothing on the VM listens for control traffic, and the tunnel forwards only to the demo app
-on `127.0.0.1:8080`.
+on `127.0.0.1:18080`.
 
 ## Secrets
 
