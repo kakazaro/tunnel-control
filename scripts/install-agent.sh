@@ -107,7 +107,7 @@ info "Installing systemd units"
 install -m 644 "$REPO_DIR/deploy/systemd/tunnel-agent.service" /etc/systemd/system/
 install -m 644 "$REPO_DIR/deploy/systemd/tunnel-demo-app.service" /etc/systemd/system/
 systemctl daemon-reload
-systemctl enable tunnel-demo-app.service tunnel-agent.service
+systemctl enable tunnel-agent.service  # the demo app is optional: `systemctl enable --now tunnel-demo-app`, then set TUNNEL_TARGET_URL=http://localhost:18080
 
 # 8. Optional UDP buffer tuning for QUIC
 if [ "$TUNE_UDP" -eq 1 ]; then
@@ -120,7 +120,7 @@ cat <<EOF
 
 Done. Next steps:
   1. Edit $ENV_FILE (CONTROL_BASE_URL, AGENT_TOKEN, AGENT_ID, ...)
-  2. sudo systemctl start tunnel-demo-app tunnel-agent
-  3. systemctl status tunnel-agent tunnel-demo-app
+  2. sudo systemctl start tunnel-agent
+  3. systemctl status tunnel-agent
   4. journalctl -u tunnel-agent -f
 EOF

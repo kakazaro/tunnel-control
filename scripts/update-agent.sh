@@ -20,8 +20,8 @@ main() {
   "$repo_dir/scripts/install-agent.sh"
 
   echo "==> restarting services"
-  systemctl restart tunnel-demo-app.service tunnel-agent.service
-  systemctl status --no-pager tunnel-demo-app.service tunnel-agent.service || true
+  systemctl restart tunnel-agent.service
+  systemctl status --no-pager tunnel-agent.service || true
 }
 
 # Everything is inside main() so that a `git pull` replacing this file mid-run is harmless.

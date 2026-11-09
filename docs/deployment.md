@@ -99,20 +99,19 @@ You need three secrets. Generate each one and store them in a password manager:
    ```
 3. Start the services:
    ```bash
-   sudo systemctl start tunnel-demo-app tunnel-agent
+   sudo systemctl start tunnel-agent
    ```
 4. Verify:
    ```bash
-   systemctl status tunnel-agent tunnel-demo-app
+   systemctl status tunnel-agent
    journalctl -u tunnel-agent -f
-   curl http://127.0.0.1:8080/healthz      # prints: ok
    ```
 
 ## 8. End-to-end test
 
 1. The page shows the agent **ONLINE** within a few seconds, with the "LIVE LINK" badge (or "POLLING" if the WebSocket is blocked).
 2. Click **ENGAGE** and wait for the URL to appear in the Tunnel panel.
-3. Open the URL: you should see the demo page ("Hello from <hostname>").
+3. Open the URL: you should see the app behind `TUNNEL_TARGET_URL` (OpenWebUI on port 8080 by default).
 4. Click **DISENGAGE** and confirm the URL stops working.
 
 ## 9. Reboot test [VM]
@@ -147,7 +146,7 @@ After it comes back, the services start by themselves and the agent goes online 
 | Page shows "POLLING" instead of "LIVE LINK" | The WebSocket is blocked by a proxy or firewall. Works, but a click takes up to 60s. Try step 6.3; or set `ENABLE_WEBSOCKET=false` to silence retries. |
 | Tunnel start timeout | See the `cloudflared` lines in the agent log. Check outbound access to Cloudflare (`api.trycloudflare.com`, UDP/TCP 7844). |
 | UDP blocked | Set `TUNNEL_PROTOCOL=http2` in `agent.env` and restart the agent. |
-| 502 on the tunnel URL | The demo app is not running: `sudo systemctl start tunnel-demo-app`. |
+| 502 on the tunnel URL | Nothing is listening on `TUNNEL_TARGET_URL` (e.g. the OpenWebUI container is down). |
 | Warning about UDP buffer size | Harmless. Optionally run `sudo ./scripts/install-agent.sh --tune-udp`. |
 | Installer says no Python 3.9+ | Install `python3.11` (step 6.2). |
 | SELinux denials | `sudo ausearch -m avc -ts recent`; fix the policy for the denied path rather than disabling SELinux. |
