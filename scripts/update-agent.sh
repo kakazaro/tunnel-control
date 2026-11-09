@@ -19,8 +19,8 @@ main() {
   echo "==> reinstalling"
   "$repo_dir/scripts/install-agent.sh" "$@"
 
-  echo "==> restarting services"
-  systemctl restart tunnel-agent.service
+  echo "==> starting agent if stopped"
+  systemctl start tunnel-agent.service  # install-agent.sh already restarted it if it was running
   systemctl status --no-pager tunnel-agent.service || true
 }
 

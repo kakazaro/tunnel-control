@@ -131,6 +131,12 @@ systemctl disable --now tunnel-demo-app.service 2>/dev/null || true
 rm -rf /etc/systemd/system/tunnel-demo-app.service "$INSTALL_DIR/demo_app"
 systemctl daemon-reload
 systemctl enable tunnel-agent.service
+# Already running (earlier deploy)? Restart so the new code and TUNNEL_TARGET_URL apply.
+# A live tunnel is torn down and comes back with a new URL; a stopped agent stays stopped.
+if systemctl is-active --quiet tunnel-agent.service; then
+  info "Restarting running tunnel-agent"
+  systemctl restart tunnel-agent.service
+fi
 
 # 8. Optional UDP buffer tuning for QUIC
 if [ "$TUNE_UDP" -eq 1 ]; then
