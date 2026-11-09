@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pull the latest code, reinstall, restart the services. Usage: sudo ./scripts/update-agent.sh
+# Pull the latest code, reinstall, restart the services. Usage: sudo ./scripts/update-agent.sh [--port N]
 # (Behind a proxy: sudo -E ./scripts/update-agent.sh)
 set -euo pipefail
 
@@ -17,7 +17,7 @@ main() {
 
   # install-agent.sh is idempotent: recopies code, refreshes deps, keeps agent.env.
   echo "==> reinstalling"
-  "$repo_dir/scripts/install-agent.sh"
+  "$repo_dir/scripts/install-agent.sh" "$@"
 
   echo "==> restarting services"
   systemctl restart tunnel-agent.service

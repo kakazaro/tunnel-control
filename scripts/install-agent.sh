@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Idempotent installer for the tunnel agent on a systemd-based Linux VM (RHEL family).
-# Usage: sudo ./scripts/install-agent.sh [--tune-udp]
+# Usage: sudo ./scripts/install-agent.sh [--tune-udp] [--port N]
+#   --port N  point the tunnel at http://localhost:N (writes TUNNEL_TARGET_URL in agent.env)
 # Behind a proxy: sudo -E ./scripts/install-agent.sh   (so pip sees HTTPS_PROXY)
-# Never overwrites /etc/tunnel-agent/agent.env.
+# Never overwrites /etc/tunnel-agent/agent.env (except TUNNEL_TARGET_URL when --port is given).
 set -euo pipefail
 
 INSTALL_DIR=/opt/tunnel-agent
@@ -17,13 +18,26 @@ die() { echo "ERROR: $*" >&2; exit 1; }
 info() { echo "==> $*"; }
 
 TUNE_UDP=0
-for arg in "$@"; do
-  case "$arg" in
+TARGET_PORT=""
+while [ $# -gt 0 ]; do
+  case "$1" in
     --tune-udp) TUNE_UDP=1 ;;
-    -h | --help) echo "Usage: sudo $0 [--tune-udp]"; exit 0 ;;
-    *) die "unknown argument: $arg" ;;
+    --port)
+      [ $# -ge 2 ] || die "--port needs a value"
+      TARGET_PORT=$2
+      shift
+      ;;
+    -h | --help) echo "Usage: sudo $0 [--tune-udp] [--port N]"; exit 0 ;;
+    *) die "unknown argument: $1" ;;
   esac
+  shift
 done
+if [ -n "$TARGET_PORT" ]; then
+  case "$TARGET_PORT" in
+    '' | *[!0-9]*) die "--port must be a number (got: $TARGET_PORT)" ;;
+  esac
+  [ "$TARGET_PORT" -ge 1 ] && [ "$TARGET_PORT" -le 65535 ] || die "--port must be 1-65535"
+fi
 
 # 1. Environment checks
 [ "$(id -u)" -eq 0 ] || die "run as root (use sudo)"
@@ -100,6 +114,14 @@ else
 fi
 chown root:root "$ENV_FILE"
 chmod 600 "$ENV_FILE"
+if [ -n "$TARGET_PORT" ]; then
+  info "Tunnel target: http://localhost:$TARGET_PORT"
+  if grep -q '^TUNNEL_TARGET_URL=' "$ENV_FILE"; then
+    sed -i "s|^TUNNEL_TARGET_URL=.*|TUNNEL_TARGET_URL=http://localhost:$TARGET_PORT|" "$ENV_FILE"
+  else
+    echo "TUNNEL_TARGET_URL=http://localhost:$TARGET_PORT" >> "$ENV_FILE"
+  fi
+fi
 
 # 7. systemd units (enabled, not started: the env file must be edited first)
 info "Installing systemd units"

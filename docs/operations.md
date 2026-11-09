@@ -62,6 +62,7 @@ The agent idles at roughly 20-30 MB of memory and does one small HTTPS request p
 
 - Web: merge to `main` (builds and deploys automatically; tests run on PRs, not on the deploy).
 - Agent [VM]: `cd tunnel-control && sudo ./scripts/update-agent.sh`.
+- Change the exposed port [VM]: `sudo ./scripts/update-agent.sh --port 8081` (rewrites `TUNNEL_TARGET_URL` in `agent.env` and restarts the agent). If a tunnel is running it restarts with a new URL.
 - Rolling back a bad Worker deploy: `cd web && npx wrangler rollback` or the dashboard (*Deployments → Rollback*).
   Then fix forward on `main`.
 
