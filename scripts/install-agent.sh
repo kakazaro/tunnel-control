@@ -123,6 +123,20 @@ if [ -n "$TARGET_PORT" ]; then
   fi
 fi
 
+# Port sanity checks (warn only; other apps such as Docker containers own ports on this VM)
+if command -v ss > /dev/null 2>&1; then
+  listening() { [ -n "$(ss -H -ltn "sport = :$1" 2> /dev/null)" ]; }
+  if [ -n "$TARGET_PORT" ] && ! listening "$TARGET_PORT"; then
+    echo "WARNING: nothing listens on localhost:$TARGET_PORT yet; the tunnel gives 502 until that app is up." >&2
+  fi
+  # The agent's own cloudflared metrics listener must not collide with another app.
+  metrics_port=$(sed -n 's/^TUNNEL_METRICS=.*:\([0-9]*\)$//p' "$ENV_FILE")
+  metrics_port=${metrics_port:-20241}
+  if ! systemctl is-active --quiet tunnel-agent.service && listening "$metrics_port"; then
+    echo "WARNING: port $metrics_port (TUNNEL_METRICS) is in use by another process; change TUNNEL_METRICS in $ENV_FILE." >&2
+  fi
+fi
+
 # 7. systemd units (enabled, not started: the env file must be edited first)
 info "Installing systemd units"
 install -m 644 "$REPO_DIR/deploy/systemd/tunnel-agent.service" /etc/systemd/system/

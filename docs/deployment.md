@@ -92,7 +92,7 @@ You need three secrets. Generate each one and store them in a password manager:
    git clone https://github.com/<you>/tunnel-control.git
    cd tunnel-control
    sudo ./scripts/install-agent.sh              # tunnel target defaults to http://localhost:8080
-   sudo ./scripts/install-agent.sh --port 8081  # or pick the local port to expose
+   sudo ./scripts/install-agent.sh --port 8081  # or pick the local port to expose (warns if nothing listens there yet)
    ```
 2. Edit the env file (`CONTROL_BASE_URL` = the base URL from step 5, `AGENT_TOKEN` = the same value as in GitHub):
    ```bash
