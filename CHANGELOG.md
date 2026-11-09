@@ -6,6 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
+- Tunnel card notice no longer hardcodes port 8080 (the target port is now configurable).
 - `install-agent.sh` and `update-agent.sh` accept `--port N` to set the local port the tunnel forwards to (`TUNNEL_TARGET_URL`).
 - The demo app is now local-dev only (port 18080) and is no longer installed on the VM, so it cannot take port 8080 from OpenWebUI. The tunnel still targets `http://localhost:8080` by default. Re-running `install-agent.sh` removes the demo app from VMs installed earlier.
 - Event stream timestamps show date and time (`HH:mm:ss - DD MMM YYYY`); client date formatting now uses `dayjs`.

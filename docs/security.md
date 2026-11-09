@@ -6,7 +6,7 @@ This is a test/learning project with a single admin and a Quick Tunnel. Read the
 
 | Surface | Access |
 |---|---|
-| The Quick Tunnel URL (`*.trycloudflare.com`) | **Public**: anyone with the URL reaches whatever app `TUNNEL_TARGET_URL` points at (OpenWebUI on port 8080). It is time-limited (session length) and changes on every start. |
+| The Quick Tunnel URL (`*.trycloudflare.com`) | **Public**: anyone with the URL reaches whatever app `TUNNEL_TARGET_URL` points at (OpenWebUI on port 8080 by default). It is time-limited (session length) and changes on every start. |
 | The SPA files (`/`, JS, CSS) | Public by design; they contain no data and no secrets. |
 | `GET /api/health` | Public; returns `{ "ok": true }` only. |
 | `POST /api/auth/login`, `/logout` | Public endpoints; login is rate limited. |
