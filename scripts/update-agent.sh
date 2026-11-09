@@ -17,7 +17,7 @@ main() {
 
   # install-agent.sh is idempotent: recopies code, refreshes deps, keeps agent.env.
   echo "==> reinstalling"
-  "$repo_dir/scripts/install-agent.sh" "$@"
+  bash "$repo_dir/scripts/install-agent.sh" "$@"
 
   echo "==> starting agent if stopped"
   systemctl start tunnel-agent.service  # install-agent.sh already restarted it if it was running
