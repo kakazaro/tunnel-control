@@ -12,8 +12,9 @@ main() {
     { echo "ERROR: run via sudo from your normal user (SUDO_USER is not set)" >&2; exit 1; }
 
   # Pull as the clone's owner: avoids git's "dubious ownership" error when run as root.
-  echo "==> git pull (as $SUDO_USER)"
-  (cd "$repo_dir" && sudo -u "$SUDO_USER" git pull)
+  # Local edits to tracked files (e.g. a chmod) are DISCARDED: the VM clone must match origin.
+  echo "==> git fetch + reset --hard to upstream (as $SUDO_USER)"
+  (cd "$repo_dir" && sudo -u "$SUDO_USER" git fetch --quiet && sudo -u "$SUDO_USER" git reset --hard @{upstream})
 
   # install-agent.sh is idempotent: recopies code, refreshes deps, keeps agent.env.
   echo "==> reinstalling"
