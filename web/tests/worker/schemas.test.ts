@@ -8,6 +8,17 @@ import {
 import { statusBody } from "./helpers";
 
 describe("AgentStatusInputSchema", () => {
+  it("defaults targetPort to null for agents that do not send it", () => {
+    const old: Record<string, unknown> = statusBody();
+    delete old.targetPort;
+    expect(AgentStatusInputSchema.parse(old).targetPort).toBeNull();
+    expect(AgentStatusInputSchema.parse(statusBody()).targetPort).toBe(8081);
+  });
+
+  it("rejects an out-of-range targetPort", () => {
+    expect(AgentStatusInputSchema.safeParse(statusBody({ targetPort: 70000 })).success).toBe(false);
+  });
+
   it("accepts a valid body and strips lastSeen", () => {
     const parsed = AgentStatusInputSchema.parse({ ...statusBody(), lastSeen: 1 });
     expect(parsed).not.toHaveProperty("lastSeen");

@@ -55,6 +55,7 @@ def test_ok_and_request_shape():
         "startedAt",
         "lastError",
         "cloudflaredVersion",
+        "targetPort",
     }
     assert body["url"] == "https://a-b.trycloudflare.com" and body["startedAt"] == 123
     assert s.headers["Authorization"] == "Bearer secret-token"

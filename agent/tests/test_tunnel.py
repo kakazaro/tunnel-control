@@ -84,3 +84,10 @@ def test_command_line():
         "http2",
     ]
     assert "--protocol" not in QuickTunnel("cf").build_command()
+
+
+def test_target_port():
+    assert QuickTunnel("cf", "http://localhost:8081").target_port == 8081
+    assert QuickTunnel("cf", "http://localhost").target_port == 80
+    assert QuickTunnel("cf", "https://h").target_port == 443
+    assert QuickTunnel("cf", "http://h:99999").target_port is None

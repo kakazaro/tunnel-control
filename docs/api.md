@@ -30,6 +30,7 @@ type AgentStatus = {
   startedAt: number | null;    // epoch ms when the current tunnel started
   lastError: string | null;    // <= 2000
   cloudflaredVersion: string | null; // <= 100
+  targetPort: number | null;   // 1-65535, local port the tunnel forwards to; optional on input (default null)
   lastSeen: number;            // set by the SERVER (ignored if the agent sends it)
 };
 
@@ -53,7 +54,7 @@ curl -X POST "$BASE/api/agent/sync" \
   -H "Authorization: Bearer $AGENT_TOKEN" -H "Content-Type: application/json" \
   -d '{"agentId":"vm-1","agentVersion":"0.1.0","hostname":"vm","running":true,
        "url":"https://example-abc.trycloudflare.com","startedAt":1760000000000,
-       "lastError":null,"cloudflaredVersion":"2026.9.1"}'
+       "lastError":null,"cloudflaredVersion":"2026.9.1","targetPort":8080}'
 ```
 
 `200`:

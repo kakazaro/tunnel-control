@@ -38,6 +38,7 @@ class Status:
     started_at: Optional[int] = None
     last_error: Optional[str] = None
     cloudflared_version: Optional[str] = None
+    target_port: Optional[int] = None
     agent_version: str = __version__
 
     def to_payload(self) -> Dict[str, Any]:
@@ -54,6 +55,7 @@ class Status:
             "cloudflaredVersion": (
                 self.cloudflared_version[:100] if self.cloudflared_version else None
             ),
+            "targetPort": self.target_port,
         }
 
 

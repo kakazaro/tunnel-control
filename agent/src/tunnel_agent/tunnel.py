@@ -9,6 +9,7 @@ import subprocess
 import threading
 import time
 from typing import Deque, List, Optional
+from urllib.parse import urlparse
 
 log = logging.getLogger(__name__)
 
@@ -42,6 +43,16 @@ class QuickTunnel:
         self._version_checked = False
 
     # -- state -------------------------------------------------------------
+    @property
+    def target_port(self) -> Optional[int]:
+        """Local port cloudflared forwards to (scheme default if the URL has none)."""
+        parsed = urlparse(self._target)
+        try:
+            port = parsed.port
+        except ValueError:
+            return None
+        return port or (443 if parsed.scheme == "https" else 80)
+
     @property
     def url(self) -> Optional[str]:
         return self._url if self.is_running() else None

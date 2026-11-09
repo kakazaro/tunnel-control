@@ -6,6 +6,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
+- The agent reports `targetPort` in its sync and the tunnel card shows the real forwarded port (optional field, so older agents keep working).
+- `update-agent.sh` now does `git fetch` + `git reset --hard @{upstream}` instead of `git pull`, so local changes to tracked files can no longer block an update (they are discarded).
 - Tunnel card notice no longer hardcodes port 8080 (the target port is now configurable).
 - `install-agent.sh` and `update-agent.sh` accept `--port N` to set the local port the tunnel forwards to (`TUNNEL_TARGET_URL`).
 - The demo app is now local-dev only (port 18080) and is no longer installed on the VM, so it cannot take port 8080 from OpenWebUI. The tunnel still targets `http://localhost:8080` by default. Re-running `install-agent.sh` removes the demo app from VMs installed earlier.

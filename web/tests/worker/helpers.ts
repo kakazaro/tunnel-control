@@ -22,6 +22,7 @@ export function statusBody(over: Record<string, unknown> = {}): Record<string, u
     startedAt: null,
     lastError: null,
     cloudflaredVersion: "2026.1.0",
+    targetPort: 8081,
     ...over,
   };
 }

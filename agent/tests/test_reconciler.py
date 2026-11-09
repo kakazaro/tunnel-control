@@ -34,6 +34,8 @@ class FakeTunnel:
         self.stops += 1
         self.running = False
 
+    target_port = 7390
+
     def cloudflared_version(self):
         return "cf-fake"
 

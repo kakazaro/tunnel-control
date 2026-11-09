@@ -35,6 +35,8 @@ export const AgentStatusInputSchema = z.object({
   startedAt: z.number().int().nonnegative().nullable(),
   lastError: z.string().max(2000).nullable(),
   cloudflaredVersion: z.string().max(100).nullable(),
+  /** Local port the tunnel forwards to. Optional so agents older than this field still sync. */
+  targetPort: z.number().int().min(1).max(65535).nullable().default(null),
 });
 export type AgentStatusInput = z.infer<typeof AgentStatusInputSchema>;
 

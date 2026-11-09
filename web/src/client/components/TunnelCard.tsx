@@ -116,7 +116,9 @@ export function TunnelCard({ data, now, stale }: Props) {
         <p className="m-0 flex gap-2 border-t border-line/60 pt-3 text-xs text-warn">
           <ShieldAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
           Quick Tunnel URLs are public and change on every restart. Anyone with the URL can reach
-          the app this tunnel forwards to.
+          {status?.targetPort
+            ? `the app on port ${status.targetPort}.`
+            : "the app this tunnel forwards to."}
         </p>
       </div>
     </HoloPanel>

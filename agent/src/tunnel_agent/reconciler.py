@@ -112,6 +112,7 @@ class Reconciler:
             started_at=self.tunnel.started_at if running else None,
             last_error=self.last_error,
             cloudflared_version=self.tunnel.cloudflared_version(),
+            target_port=self.tunnel.target_port,
         )
 
     # -- internals ---------------------------------------------------------

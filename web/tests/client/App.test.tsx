@@ -207,6 +207,7 @@ describe("single page: lock, unlock, control", () => {
       startedAt: Date.now() - 65_000,
       lastError: null,
       cloudflaredVersion: "2026.9.1",
+      targetPort: 8081,
       lastSeen: Date.now(),
     };
     const server = fakeServer({ status, online: true });
@@ -222,6 +223,7 @@ describe("single page: lock, unlock, control", () => {
       "https://demo-1.trycloudflare.com",
     );
     expect(screen.getByText(/quick tunnel urls are public/i)).toBeInTheDocument();
+    expect(screen.getByText(/app on port 8081/i)).toBeInTheDocument();
     expect(screen.getByText("2026.9.1")).toBeInTheDocument();
   });
 
@@ -235,6 +237,7 @@ describe("single page: lock, unlock, control", () => {
       startedAt: null,
       lastError: "cloudflared did not print a URL",
       cloudflaredVersion: null,
+      targetPort: null,
       lastSeen: Date.now(),
     };
     const server = fakeServer({ status, online: true });

@@ -128,8 +128,11 @@ After it comes back, the services start by themselves and the agent goes online 
 - **Web:** merge a pull request (or push) to `main`. GitHub Actions builds and deploys it.
 - **Agent** [VM]:
   ```bash
-  cd tunnel-control && sudo ./scripts/update-agent.sh
+  cd tunnel-control && sudo ./scripts/update-agent.sh                # keep the current target port
+  cd tunnel-control && sudo ./scripts/update-agent.sh --port 8081    # or change the forwarded port
   ```
+  The script runs `git fetch` + `git reset --hard @{upstream}`, so local changes to tracked files are discarded and never block an update. The scripts are committed with the executable bit and `update-agent.sh` calls the installer through `bash`, so no `chmod` is needed and a pull cannot lose it.
+  If an older clone says `Permission denied` or `command not found`, run it once as `sudo bash ./scripts/update-agent.sh`; if `git pull` is blocked by local mode changes, run `git checkout -- scripts && git pull` first. After that the normal command works.
 
 ## 11. Rotating secrets
 
