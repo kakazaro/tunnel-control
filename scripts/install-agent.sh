@@ -130,7 +130,7 @@ if command -v ss > /dev/null 2>&1; then
     echo "WARNING: nothing listens on localhost:$TARGET_PORT yet; the tunnel gives 502 until that app is up." >&2
   fi
   # The agent's own cloudflared metrics listener must not collide with another app.
-  metrics_port=$(sed -n 's/^TUNNEL_METRICS=.*:\([0-9]*\)$//p' "$ENV_FILE")
+  metrics_port=$(sed -n 's/^TUNNEL_METRICS=.*:\([0-9]*\)$/\1/p' "$ENV_FILE")
   metrics_port=${metrics_port:-20241}
   if ! systemctl is-active --quiet tunnel-agent.service && listening "$metrics_port"; then
     echo "WARNING: port $metrics_port (TUNNEL_METRICS) is in use by another process; change TUNNEL_METRICS in $ENV_FILE." >&2
