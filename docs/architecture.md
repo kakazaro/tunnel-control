@@ -16,10 +16,10 @@ Cloudflare Worker (tunnel-control.<subdomain>.workers.dev)
 Python agent on the VM (systemd)
    │  subprocess
    ▼
-cloudflared tunnel --url http://localhost:18080 ──► Cloudflare edge ──► https://*.trycloudflare.com
+cloudflared tunnel --url http://localhost:8080 ──► Cloudflare edge ──► https://*.trycloudflare.com
    │
    ▼
-Demo app on 127.0.0.1:18080
+Demo app on 127.0.0.1:8080
 
 GitHub (push to main) ──► GitHub Actions: build ──► wrangler deploy (Worker + assets + secrets)
 ```

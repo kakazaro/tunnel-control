@@ -7,7 +7,7 @@ from tunnel_agent.tunnel import QuickTunnel, TunnelStartError
 
 def make(binary, **kw):
     kw.setdefault("start_timeout", 20)
-    return QuickTunnel(binary, "http://localhost:18080", **kw)
+    return QuickTunnel(binary, "http://localhost:8080", **kw)
 
 
 def test_start_extracts_url_and_stop_terminates(fake_bin):

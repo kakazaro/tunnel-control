@@ -9,7 +9,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 HOST = "127.0.0.1"
-PORT = int(os.environ.get("DEMO_APP_PORT", "18080"))
+PORT = int(os.environ.get("DEMO_APP_PORT", "8080"))
 
 
 class Handler(BaseHTTPRequestHandler):

@@ -29,7 +29,7 @@ class Config:
     agent_id: str = "vm-1"
     poll_interval: int = 60
     enable_websocket: bool = True
-    tunnel_target_url: str = "http://localhost:18080"
+    tunnel_target_url: str = "http://localhost:8080"
     cloudflared_bin: str = "/usr/bin/cloudflared"
     tunnel_protocol: str = "auto"
     tunnel_metrics: str = "127.0.0.1:20241"
@@ -124,7 +124,7 @@ def load_config(env: Mapping[str, str]) -> Config:
         agent_id=env.get("AGENT_ID", "").strip() or "vm-1",
         poll_interval=clamp_poll(_num(env, "POLL_INTERVAL_SECONDS", 60)),
         enable_websocket=_bool(env, "ENABLE_WEBSOCKET", True),
-        tunnel_target_url=env.get("TUNNEL_TARGET_URL", "").strip() or "http://localhost:18080",
+        tunnel_target_url=env.get("TUNNEL_TARGET_URL", "").strip() or "http://localhost:8080",
         cloudflared_bin=env.get("CLOUDFLARED_BIN", "").strip() or "/usr/bin/cloudflared",
         tunnel_protocol=protocol,
         tunnel_metrics=env.get("TUNNEL_METRICS", "").strip() or "127.0.0.1:20241",
