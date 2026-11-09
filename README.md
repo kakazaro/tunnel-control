@@ -13,7 +13,7 @@ Browser ──HTTPS──► Cloudflare Worker (SPA + API) ──► Durable Obj
                          ▲   ▲
         HTTPS sync (POST)│   │WSS nudge
                          │   │
-              Python agent on the VM ──► cloudflared ──► https://*.trycloudflare.com ──► demo app :8080
+              Python agent on the VM ──► cloudflared ──► https://*.trycloudflare.com ──► your app :8080 (e.g. OpenWebUI)
 ```
 
 ## Quick start
@@ -28,7 +28,7 @@ Browser ──HTTPS──► Cloudflare Worker (SPA + API) ──► Durable Obj
 
 ```
 web/       Cloudflare Worker (Hono + Durable Object) and the Vite/React single-page UI
-agent/     Python agent, demo app, tests
+agent/     Python agent, local-only demo app, tests
 deploy/    systemd units, env example, sysctl tuning
 scripts/   install-agent.sh, update-agent.sh, gen-secret.sh
 docs/      documentation and ADRs

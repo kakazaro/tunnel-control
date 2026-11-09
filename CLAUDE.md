@@ -15,7 +15,7 @@ Details: [docs/architecture.md](docs/architecture.md). Full original spec: `plan
 | `web/src/shared/schemas.ts` | zod schemas + types used by both the Worker and the UI |
 | `web/tests/worker`, `web/tests/client` | Vitest: workerd (real Durable Objects) and jsdom |
 | `agent/src/tunnel_agent/` | The agent: `config`, `tunnel`, `client`, `nudge`, `reconciler` |
-| `agent/demo_app/server.py` | Optional test app on `127.0.0.1:18080` (not the tunnel default, not enabled by the installer) |
+| `agent/demo_app/server.py` | Local-dev test app on `127.0.0.1:18080`; never installed on the VM |
 | `agent/dev/` | Launchers that make `fake_cloudflared.py` usable as `CLOUDFLARED_BIN` |
 | `deploy/`, `scripts/` | systemd units, env example, sysctl, `install-agent.sh`, `update-agent.sh`, `gen-secret.sh` |
 | `docs/` | architecture, api, development, deployment, operations, security, design, `decisions/` (ADRs) |

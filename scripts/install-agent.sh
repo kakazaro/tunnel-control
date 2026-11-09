@@ -76,13 +76,12 @@ fi
 # 5. Code + venv (code is owned by root, read-only for the service)
 info "Copying agent to $INSTALL_DIR"
 install -d -m 755 "$INSTALL_DIR"
-rm -rf "$INSTALL_DIR/src" "$INSTALL_DIR/demo_app"
+rm -rf "$INSTALL_DIR/src"
 cp -R "$REPO_DIR/agent/src" "$INSTALL_DIR/src"
-cp -R "$REPO_DIR/agent/demo_app" "$INSTALL_DIR/demo_app"
 cp "$REPO_DIR/agent/requirements.txt" "$INSTALL_DIR/requirements.txt"
-find "$INSTALL_DIR/src" "$INSTALL_DIR/demo_app" -name '__pycache__' -type d -prune -exec rm -rf {} +
-chown -R root:root "$INSTALL_DIR/src" "$INSTALL_DIR/demo_app" "$INSTALL_DIR/requirements.txt"
-chmod -R u=rwX,go=rX "$INSTALL_DIR/src" "$INSTALL_DIR/demo_app"
+find "$INSTALL_DIR/src" -name '__pycache__' -type d -prune -exec rm -rf {} +
+chown -R root:root "$INSTALL_DIR/src" "$INSTALL_DIR/requirements.txt"
+chmod -R u=rwX,go=rX "$INSTALL_DIR/src"
 
 info "Creating/refreshing virtualenv"
 "$PYTHON" -m venv "$INSTALL_DIR/.venv" ||
@@ -105,9 +104,11 @@ chmod 600 "$ENV_FILE"
 # 7. systemd units (enabled, not started: the env file must be edited first)
 info "Installing systemd units"
 install -m 644 "$REPO_DIR/deploy/systemd/tunnel-agent.service" /etc/systemd/system/
-install -m 644 "$REPO_DIR/deploy/systemd/tunnel-demo-app.service" /etc/systemd/system/
+# The demo app is dev-only. Remove it from VMs installed by older versions (it held port 8080).
+systemctl disable --now tunnel-demo-app.service 2>/dev/null || true
+rm -rf /etc/systemd/system/tunnel-demo-app.service "$INSTALL_DIR/demo_app"
 systemctl daemon-reload
-systemctl enable tunnel-agent.service  # the demo app is optional: `systemctl enable --now tunnel-demo-app`, then set TUNNEL_TARGET_URL=http://localhost:18080
+systemctl enable tunnel-agent.service
 
 # 8. Optional UDP buffer tuning for QUIC
 if [ "$TUNE_UDP" -eq 1 ]; then

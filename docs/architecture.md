@@ -31,7 +31,7 @@ GitHub (push to main) ──► GitHub Actions: build ──► wrangler deploy 
 - **The WebSocket is an optimization.** It only triggers an early sync. Without it, the agent polls every 60s.
 - **The server owns time.** `lastSeen` is set by the Worker.
 - **Online** means `now - lastSeen < AGENT_OFFLINE_AFTER_SECONDS` (default 150s = 2.5 × the poll interval). A Durable Object alarm records the `agent_offline_detected` event at the right moment.
-- **The control plane is never exposed through the tunnel.** The agent has no HTTP server; the tunnel forwards only to the demo app.
+- **The control plane is never exposed through the tunnel.** The agent has no HTTP server; the tunnel forwards only to `TUNNEL_TARGET_URL`.
 - **Sessions.** Starting needs a session length (1, 2, 4, 8 or 12 hours). The Durable Object stores `expiresAt`, an alarm (and a check on every read/sync) stops the session when time is up, and the agent also enforces the deadline locally, so a lost connection cannot leave the tunnel open.
 - **One page.** Login is a state of `/` (locked/unlocked), not a route.
 

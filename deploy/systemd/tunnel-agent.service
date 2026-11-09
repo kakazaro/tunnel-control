@@ -1,7 +1,7 @@
 [Unit]
 Description=Tunnel Control agent (starts/stops a Cloudflare Quick Tunnel on request)
 Documentation=https://github.com/your-org/tunnel-control
-After=network-online.target tunnel-demo-app.service
+After=network-online.target
 Wants=network-online.target
 
 [Service]

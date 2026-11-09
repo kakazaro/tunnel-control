@@ -9,7 +9,7 @@
 | Agent code / venv | `/opt/tunnel-agent` (root-owned), `/opt/tunnel-agent/.venv` |
 | Agent config | `/etc/tunnel-agent/agent.env` (root, mode 600) |
 | Agent state / HOME | `/var/lib/tunnel-agent` |
-| Services | `tunnel-agent.service`, `tunnel-demo-app.service` |
+| Services | `tunnel-agent.service` |
 
 ## Logs [VM]
 
@@ -27,8 +27,8 @@ only when a start fails.
 
 ```bash
 sudo systemctl restart tunnel-agent        # also restarts cloudflared (same cgroup)
-sudo systemctl stop tunnel-agent tunnel-demo-app
-systemctl status tunnel-agent tunnel-demo-app
+sudo systemctl stop tunnel-agent
+systemctl status tunnel-agent
 ```
 
 Stopping the agent stops the tunnel. The Worker marks the agent offline after 150s without a sync.
@@ -76,7 +76,7 @@ See [deployment.md](deployment.md#11-rotating-secrets).
 | Page shows "OFFLINE · SIGNAL LOST" | `systemctl status tunnel-agent`; `journalctl -u tunnel-agent -n 100`; check network and `agent.env`. |
 | Click on ENGAGE does nothing for a minute | The WebSocket is down (badge says POLLING). The agent still picks it up within one poll interval. |
 | Tunnel keeps failing to start | The log shows the last `cloudflared` lines. The agent backs off (60s, 120s, 240s, then 300s). Check outbound access and try `TUNNEL_PROTOCOL=http2`. |
-| URL stopped working but page says running | `cloudflared` may have crashed: the next tick restarts it (new URL). Check the demo app. |
+| URL stopped working but page says running | `cloudflared` may have crashed: the next tick restarts it (new URL). Check that the app behind `TUNNEL_TARGET_URL` is up. |
 | Login locked out ("LOCKED OUT · RETRY IN …") | 10 wrong attempts per IP in 15 minutes. Wait for the countdown. |
 | Unexpected `500 misconfigured` | A Worker secret is missing/too short. Re-run the *Deploy* workflow; `npx wrangler tail` shows which variable. |
 | Events stop updating | Check the Worker logs for errors; the Durable Object state is kept across deploys. |

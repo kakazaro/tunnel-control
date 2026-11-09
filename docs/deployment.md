@@ -158,8 +158,8 @@ After it comes back, the services start by themselves and the agent goes online 
 
 [VM]:
 ```bash
-sudo systemctl disable --now tunnel-agent tunnel-demo-app
-sudo rm /etc/systemd/system/tunnel-agent.service /etc/systemd/system/tunnel-demo-app.service
+sudo systemctl disable --now tunnel-agent
+sudo rm /etc/systemd/system/tunnel-agent.service
 sudo systemctl daemon-reload
 sudo rm -rf /opt/tunnel-agent /etc/tunnel-agent /var/lib/tunnel-agent
 sudo rm -f /etc/sysctl.d/99-quic.conf

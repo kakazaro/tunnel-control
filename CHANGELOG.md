@@ -6,7 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
-- The optional demo app moved to port 18080 and is no longer enabled by the installer, so it cannot take port 8080 from OpenWebUI. The tunnel still targets `http://localhost:8080` by default. On an existing VM run `sudo systemctl disable --now tunnel-demo-app` before (re)starting the OpenWebUI container.
+- The demo app is now local-dev only (port 18080) and is no longer installed on the VM, so it cannot take port 8080 from OpenWebUI. The tunnel still targets `http://localhost:8080` by default. Re-running `install-agent.sh` removes the demo app from VMs installed earlier.
 - Event stream timestamps show date and time (`HH:mm:ss - DD MMM YYYY`); client date formatting now uses `dayjs`.
 
 ### Added
